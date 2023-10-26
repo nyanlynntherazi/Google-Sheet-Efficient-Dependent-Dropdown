@@ -8,11 +8,11 @@ const validationData = {
 };
 */
 
-const validationData = {  
-  "Johann Sebastian Bach":["Air on the G String","Toccata and Fugue in D minor, BWV 565","Brandenburg Concertos","Fugue in G minor, BWV 578","Jesu, Joy of Man's Desiring","Goldberg Variations","St. Matthew Passion","Ave Maria"],
-  "Ludwig van Beethoven":["Symphony No. 5","Symphony No. 9","Piano Sonata No. 14","Für Elise","Symphony No. 7","Symphony No. 3","Symphony No. 6","Piano Sonata No. 8"],
-  "Frédéric Chopin":["Nocturnes, Op. 9","Nocturne in E-flat major, Op. 9, No. 2","Fantaisie-Impromptu","Minute Waltz","Piano Concerto No. 1","Polonaise in A-flat major, Op. 53","Études","Nocturne in C-sharp minor, Op. posth"],
-  "Wolfgang Amadeus Mozart":["Requiem","The Magic Flute","Eine kleine Nachtmusik","Symphony No. 40","The Marriage of Figaro","Don Giovanni","Piano Sonata No. 11","Clarinet Concerto"]
+const validationData = { 
+  "Fruit":["Mango", "Apple", "Orange", "Banana", "Cherry"],
+  "Vegetable":["Cabbage","Lettuce","Eggplant","Pepper","Spinach"],
+  "Meat":["Chicken","Fish","Pork","Beef", "Crab"],
+  "Grains":["Rice","Rye", "Corn", "Oat","Wheat","Barley"]
 };
 
 
