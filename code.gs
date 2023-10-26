@@ -9,9 +9,9 @@ const validationData = {
 */
 
 const validationData = { 
-  "Fruit":["Mango", "Apple", "Orange", "Banana", "Cherry"],
-  "Vegetable":["Cabbage","Lettuce","Eggplant","Pepper","Spinach"],
-  "Meat":["Chicken","Fish","Pork","Beef", "Crab"],
+  "Fruits":["Mango", "Apple", "Orange", "Banana", "Cherry"],
+  "Vegetables":["Cabbage","Lettuce","Eggplant","Pepper","Spinach"],
+  "Meats":["Chicken","Fish","Pork","Beef", "Crab"],
   "Grains":["Rice","Rye", "Corn", "Oat","Wheat","Barley"]
 };
 
