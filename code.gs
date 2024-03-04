@@ -1,3 +1,13 @@
+/**
+ * Creates a dependent dropdown list in a Google Sheet.
+ *
+ * @param {GoogleAppsScript.Spreadsheet.Range} triggerCell The cell where the dropdown will be created.
+ * @param {validationData} data An object containing the dependent dropdown data structure.
+ * @author Nyan Lynn Myint &lt;nyanlynn.razi@gmail.com>
+ *
+ */
+
+
 //Validation Json Object Sample, Part before : is parent value, after is child value Change accordingly
 /*
 const validationData = {  
