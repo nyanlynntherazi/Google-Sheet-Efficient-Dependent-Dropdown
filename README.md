@@ -2,9 +2,9 @@
 
 Making dependent dropdowns in Google Sheets can be a little tricky. There are different ways to do it, but right now, using Google Apps Script seems to be the best method.
 
-The code has been optimized multiple times to achieve the high level of efficiency, and it appears that this is the most efficient version. Average Execution Duration is around 0.9 Seconds and takes usually less than 3 seconds while using it in real world use.
+`onEdit` makes no spreadsheet calls until an edit intersects column A from row 2 down on `Sheet1`. That edit costs one sheet-name check and two writes: clear the child cell, then set its dropdown. A paste or fill down column A reads the parent values once and updates every neighbor in that same batch.
 
-The downside of this script is that the validation JSON object is initialized within the app script itself, making it challenging for users to easily make changes to the validation values in the spreadsheet.
+The downside of this script is that the validation JSON object is initialized within the app script itself, making it challenging for users to easily make changes to the validation values in the spreadsheet. Moving those lists onto the sheet would add reads on each edit.
 
 
 ## Flowchart
