@@ -1,16 +1,15 @@
 /**
- * Creates a dependent dropdown list in a Google Sheet.
+ * Dependent dropdowns for Sheet1.
+ * Column A is the parent. The cell to its right receives the child list.
+ * onEdit uses the edit event first and calls the spreadsheet service only
+ * when that edit intersects column A from row 2 down.
  *
- * @param {GoogleAppsScript.Spreadsheet.Range} triggerCell The cell where the dropdown will be created.
- * @param {validationData} data An object containing the dependent dropdown data structure.
  * @author Nyan Lynn Myint &lt;nyanlynn.razi@gmail.com>
- *
  */
-
 
 //Validation Json Object Sample, Part before : is parent value, after is child value Change accordingly
 /*
-const validationData = {  
+const validationData = {
   "A":["A1","A2","A3","A4"],
   "B":["B1","B2","B3","B4"],
   "C":["C1","C2","C3","C4"],
@@ -18,52 +17,62 @@ const validationData = {
 };
 */
 
-const validationData = { 
+const validationData = {
   "Fruits":["Mango", "Apple", "Orange", "Banana", "Cherry"],
   "Vegetables":["Cabbage","Lettuce","Eggplant","Pepper","Spinach"],
   "Meats":["Chicken","Fish","Pork","Beef", "Crab"],
   "Grains":["Rice","Rye", "Corn", "Oat","Wheat","Barley"]
 };
 
+// Sheet1 column A is the parent. Child lists start at row 2, in the next column.
+const SHEET_NAME = "Sheet1";
+const PARENT_COLUMN = 1;
+const FIRST_DATA_ROW = 2;
 
-const dependentDropdown = (e) => {
-/* 
-This Function creates dependent dropdown menu based on Activity
-*/
-  const activeCell = e.source.getActiveCell();
-  const targetCell = activeCell.offset(0, 1);//(row offset,column offset) 0,1 means same row adjacent column
-  const COA = activeCell.getValue();
-  
-  targetCell.clearContent();
-  
-  const mValues = validationData[COA];
-  if (mValues) {
-    const validationRule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(mValues)
-      .build();
-      targetCell.setDataValidation(validationRule);
-  } else {
-    targetCell.clearDataValidations();
+const ruleFor = (value) => {
+  const list = validationData[value];
+  if (!list) {
+    return null;
   }
-}
-  
-
+  return SpreadsheetApp.newDataValidation()
+    .requireValueInList(list)
+    .build();
+};
 
 const onEdit = (e) => {
+  if (!e || !e.range) {
+    return;
+  }
 
-//Get sheet Names, Rows and Columns
   const range = e.range;
-  const source = e.source;
-  const col = range.getColumn();
-  const row = range.getRow();
-  const sheetName = source.getActiveSheet().getName(); //Get Sheet Name from event object
+  const startRow = range.getRow();
+  const startColumn = range.getColumn();
+  const endRow = startRow + range.getNumRows() - 1;
+  const endColumn = startColumn + range.getNumColumns() - 1;
 
-//Running function everytime any change in the spreadsheet is not efficient.
-//So just call the function when the user edit specific positions
-//Change this accordingly col == 1 Means Column A is Parent column and row >1 means The script will work start from row 2
-if(sheetName == "Sheet1" && col == 1 && row > 1 ) {
+  // Row and column come from the event. Return before any spreadsheet call
+  // when this edit misses column A from row 2 down.
+  if (endColumn < PARENT_COLUMN || startColumn > PARENT_COLUMN || endRow < FIRST_DATA_ROW) {
+    return;
+  }
 
-    dependentDropdown(e);
+  if (range.getSheet().getName() !== SHEET_NAME) {
+    return;
+  }
 
-  } 
-}
+  const rowOffset = Math.max(FIRST_DATA_ROW, startRow) - startRow;
+  const parentRowCount = endRow - startRow - rowOffset + 1;
+  const parentRange = range.offset(rowOffset, PARENT_COLUMN - startColumn, parentRowCount, 1);
+  const targetRange = parentRange.offset(0, 1);
+
+  const singleCell = parentRowCount === 1
+    && range.getNumRows() === 1
+    && range.getNumColumns() === 1;
+
+  const rules = singleCell
+    ? [[ruleFor(e.value)]]
+    : parentRange.getValues().map(([value]) => [ruleFor(value)]);
+
+  targetRange.clearContent();
+  targetRange.setDataValidations(rules);
+};
