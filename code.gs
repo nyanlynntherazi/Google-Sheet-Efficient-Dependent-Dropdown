@@ -29,17 +29,22 @@ const SHEET_NAME = "Sheet1";
 const PARENT_COLUMN = 1;
 const FIRST_DATA_ROW = 2;
 
+// One rule per parent value, built once per run and reused for every row.
+const ruleCache = {};
+
 const ruleFor = (value) => {
-  const list = validationData[value];
-  if (!list) {
+  if (!Object.prototype.hasOwnProperty.call(validationData, value)) {
     return null;
   }
-  return SpreadsheetApp.newDataValidation()
-    .requireValueInList(list)
-    .build();
+  if (!ruleCache[value]) {
+    ruleCache[value] = SpreadsheetApp.newDataValidation()
+      .requireValueInList(validationData[value])
+      .build();
+  }
+  return ruleCache[value];
 };
 
-const onEdit = (e) => {
+function onEdit(e) {
   if (!e || !e.range) {
     return;
   }
@@ -53,6 +58,12 @@ const onEdit = (e) => {
   // Row and column come from the event. Return before any spreadsheet call
   // when this edit misses column A from row 2 down.
   if (endColumn < PARENT_COLUMN || startColumn > PARENT_COLUMN || endRow < FIRST_DATA_ROW) {
+    return;
+  }
+
+  // Parent unchanged: keep the user's child selection and make no writes.
+  if (e.oldValue !== undefined && e.oldValue === e.value
+    && range.getNumRows() === 1 && range.getNumColumns() === 1) {
     return;
   }
 
@@ -75,4 +86,4 @@ const onEdit = (e) => {
 
   targetRange.clearContent();
   targetRange.setDataValidations(rules);
-};
+}
